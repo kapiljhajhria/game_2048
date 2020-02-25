@@ -13,7 +13,7 @@ import 'dart:io';
 import 'dart:math';
 
 class Game2048{
-  List<List> board = [
+  List<List<int>> board = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -61,7 +61,7 @@ class Game2048{
     return leftSlide(numList.reversed.toList()).reversed.toList();
   }
 
-  leftMoveBoard(board) {
+  List<List<int>> leftMoveBoard(List<List<int>>board) {
     // console.log(board);
     for (var i = 0; i < board.length; i++) {
       board[i] = leftSlide(board[i]);
