@@ -30,6 +30,26 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Game2048 game=Game2048();
 
+  Widget singleCell(int num){
+    return Container(
+      decoration: new BoxDecoration(
+          border: new Border.all(
+              color: Colors.black,
+              width: 5.0,
+              style: BorderStyle.solid
+          ),),
+        child: Center(child: Text(num.toString(),style: TextStyle(color: Colors.black),)));
+  }
+  List<Widget> cellsList(List<List<int>> board){
+    List<Widget> temp=[];
+    for(int i=0;i<board.length;i++){
+      for(int j=0;j<board[i].length;j++){
+          temp.add(singleCell(board[i][j]));
+      }
+    }
+    return temp;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,27 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisCount: 4,
               mainAxisSpacing: 4.0,
               crossAxisSpacing: 4.0,
-              children: <Widget>[
-                Container( child: Center(child: Text(game.board[0][0].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[0][1].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[0][2].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[0][3].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[1][0].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[1][1].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[1][2].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[1][3].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[2][0].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[2][1].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[2][2].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[2][3].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[3][0].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[3][1].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[3][2].toString(),style: TextStyle(color: Colors.black),))),
-                Container( child: Center(child: Text(game.board[3][3].toString(),style: TextStyle(color: Colors.black),))),
-
-
-
-              ],
+              children: cellsList(game.board),
             ),
           ),
           Row(

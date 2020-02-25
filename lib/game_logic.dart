@@ -167,7 +167,7 @@ class Game2048{
     playerMove = getNextMove();
     print("playerMove:" + playerMove);
     tempBoard = playMove(tempBoard, playerMove);
-    //now chekc if game is won or not, if not then add 2 at any random place
+    //now check if game is won or not, if not then add 2 at any random place
     if (gameWon(tempBoard)) {
       print("Congraturlation, you won");
       print(tempBoard);
@@ -198,9 +198,9 @@ class Game2048{
     play2048(board);
   }
 }
-void main(){
-  Game2048 game = Game2048();
-  game.start2048();
-//print(leftSlide([1,1,0,0]));
-//print(rightSlide([1,1,0,0]));
-}
+//void main(){
+//  Game2048 game = Game2048();
+//  game.start2048();
+////print(leftSlide([1,1,0,0]));
+////print(rightSlide([1,1,0,0]));
+//}
