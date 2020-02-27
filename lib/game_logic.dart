@@ -12,13 +12,14 @@ import 'dart:io';
 
 import 'dart:math';
 
-class Game2048{
+class Game2048 {
   List<List<int>> board = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ];
+  Status gameStatus;
 
   List<int> leftSlide(List<int> numList) {
     int origSize = numList.length;
@@ -26,7 +27,7 @@ class Game2048{
     var size = numList.length;
     for (int i = 0; i < size - 1; i++) {
       if (numList[i] == numList[i + 1]) {
-        numList=removeElements(numList, i, i+1);
+        numList = removeElements(numList, i, i + 1);
 //      var temp = numList[i] + numList[i + 1]; //combine both integers
 //      numList.splice(i, 2); //remove old elements
 //      // numList.splice(i,1);
@@ -44,45 +45,43 @@ class Game2048{
     // console.log(numList);
     return numList;
   }
-  removeElements(List<int> nums,int i, int j){
-    int temp= nums[i]+nums[j];
-    List<int> tempA= [];
-    tempA.addAll(nums.sublist(0,i));
+
+  removeElements(List<int> nums, int i, int j) {
+    int temp = nums[i] + nums[j];
+    List<int> tempA = [];
+    tempA.addAll(nums.sublist(0, i));
     tempA.add(temp);
-    print(tempA);
-    List<int> tempB=[];
-    tempB.addAll(nums.sublist(j+1));
-    print(tempB);
+    List<int> tempB = [];
+    tempB.addAll(nums.sublist(j + 1));
 
     tempA.addAll(tempB);
     return tempA;
   }
+
   rightSlide(List<int> numList) {
     return leftSlide(numList.reversed.toList()).reversed.toList();
   }
-
-
 
   transpose(List<List> matrix) {
     int n = matrix.length;
     for (int i = 0; i < n; i++) {
       for (int j = i + 1; j < n; j++) // only the upper is iterated
-          {
-        swap(matrix, [i,j], [j,i]);
+      {
+        swap(matrix, [i, j], [j, i]);
       }
     }
     return matrix;
   }
 
-  List swap(List matrix, List a,List b) {
+  List swap(List matrix, List a, List b) {
     int buffer = matrix[a[0]][a[1]];
-    matrix[a[0]][a[1]] = matrix[b[0]][b[1]] ;
+    matrix[a[0]][a[1]] = matrix[b[0]][b[1]];
     matrix[b[0]][b[1]] = buffer;
     return matrix;
   }
 
 // console.log(transpose(board));
-  List<List<int>> leftMoveBoard(List<List<int>>board) {
+  List<List<int>> leftMoveBoard(List<List<int>> board) {
     // console.log(board);
     for (var i = 0; i < board.length; i++) {
       board[i] = leftSlide(board[i]);
@@ -118,11 +117,37 @@ class Game2048{
     for (var row = 0; row < board.length; row++) {
       for (var col = 0; col < board[row].length; col++) {
         if (board[row][col] == 2048) {
+          gameStatus = Status.won;
           return true;
         }
       }
     }
+    gameStatus = Status.running;
     return false;
+  }
+
+  updateGameStatus() {
+    for (var row = 0; row < board.length; row++) {
+      for (var col = 0; col < board[row].length; col++) {
+        if (board[row][col] == 2048) {
+          gameStatus = Status.won;
+          return 0;
+        } else if (board[row][col] == 0) {
+          gameStatus = Status.running;
+          return 0;
+        } else if (col < board[row].length - 1 &&
+            (board[row][col] == board[row][col + 1])) {
+          gameStatus = Status.running;
+          return 0;
+        }else if(row < board.length-1 && board[row][col]==board[row+1][col]){
+          gameStatus=Status.running;
+          return 0;
+        }
+      }
+    }
+    gameStatus=Status.over;
+
+    print("gameStatus:$gameStatus");
   }
 
   addTwo2(board) {
@@ -140,7 +165,9 @@ class Game2048{
     }
 //    print("emptyspaces: ${emptySpaces.length}");
     //if there are no empty spcaes then return the board as it is
-    if (emptySpaces.length == 0) return null;
+    if (emptySpaces.length == 0) {
+      return null;
+    }
 
     List emptyPosition = emptySpaces[Random().nextInt(emptySpaces.length)];
     //now pick any random location from the emptySpaces array
@@ -161,6 +188,7 @@ class Game2048{
     }
   }
 
+//only for console
   play2048(board) {
     printBoard(board);
     var tempBoard = board;
@@ -187,57 +215,55 @@ class Game2048{
   }
 
 //play2048(board);
-  start2048() {
-    var board = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ];
-    board = addTwo2(board);
-    print("lets play 2048 game");
-    play2048(board);
-  }
-  up(){
+
+  up() {
     slideUp(board);
-    if(!gameWon(board)){
+    updateGameStatus();
+    if (gameStatus==Status.running) {
       addTwo2(board);
     }
   }
-  down(){
+
+  down() {
     slideDown(board);
-    if(!gameWon(board)){
+    updateGameStatus();
+    if (gameStatus==Status.running) {
       addTwo2(board);
     }
   }
-  left(){
+
+  left() {
     leftMoveBoard(board);
-    if(!gameWon(board)){
+    updateGameStatus();
+    if (gameStatus==Status.running) {
       addTwo2(board);
     }
   }
-  right(){
+
+  right() {
     rightMoveBoard(board);
-    if(!gameWon(board)){
+    updateGameStatus();
+    if (gameStatus == Status.running) {
       addTwo2(board);
     }
   }
-  reset(){
-    board=[
+
+  start() {
+    board = [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
     ];
     addTwo2(board);
-  }
-  start(){
-    addTwo2(board);
+    gameStatus = Status.running;
   }
 }
+
 //void main(){
 //  Game2048 game = Game2048();
 //  game.start2048();
 ////print(leftSlide([1,1,0,0]));
 ////print(rightSlide([1,1,0,0]));
 //}
+enum Status { running, over, won }

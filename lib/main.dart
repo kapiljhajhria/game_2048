@@ -73,10 +73,34 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     game.start();
-    setState(() {
-
-    });
+    setState(() {});
   }
+
+  Future<void> displayDialog({String message}) async {
+    switch (await showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text(
+              message,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              )
+            ],
+          );
+        })) {
+    }
+  }
+
+  showPopUp() {
+    if (game.gameStatus == Status.over) displayDialog(message: "Game Over");
+    if (game.gameStatus == Status.won) displayDialog(message: "You Won");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,21 +121,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   print("swipe left");
                   game.left();
                 }
+                showPopUp();
                 setState(() {});
               },
               onVerticalDragEnd: (drag) {
-                print(drag.primaryVelocity);
-                print(drag.velocity);
                 if (drag.primaryVelocity > 0) {
                   print("swipe Down");
                   game.down();
-                  setState(() {});
                 }
                 if (drag.primaryVelocity < 0) {
                   print("swipe up");
                   game.up();
-                  setState(() {});
                 }
+                showPopUp();
+                setState(() {});
               },
               child: Container(
                 color: Colors.white30,
@@ -128,13 +151,15 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                IconButton(icon: Icon(Icons.refresh,size: 50,),
-                onPressed: (){
-                  game.reset();
-                  setState(() {
-
-                  });
-                },
+                IconButton(
+                  icon: Icon(
+                    Icons.refresh,
+                    size: 50,
+                  ),
+                  onPressed: () {
+                    game.start();
+                    setState(() {});
+                  },
                 )
               ],
             ),
