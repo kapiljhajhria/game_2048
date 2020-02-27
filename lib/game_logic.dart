@@ -61,20 +61,7 @@ class Game2048{
     return leftSlide(numList.reversed.toList()).reversed.toList();
   }
 
-  List<List<int>> leftMoveBoard(List<List<int>>board) {
-    // console.log(board);
-    for (var i = 0; i < board.length; i++) {
-      board[i] = leftSlide(board[i]);
-    }
-    return board;
-  }
 
-  rightMoveBoard(board) {
-    for (var i = 0; i < board.length; i++) {
-      board[i] = rightSlide(board[i]);
-    }
-    return board;
-  }
 
   transpose(List<List> matrix) {
     int n = matrix.length;
@@ -95,6 +82,20 @@ class Game2048{
   }
 
 // console.log(transpose(board));
+  List<List<int>> leftMoveBoard(List<List<int>>board) {
+    // console.log(board);
+    for (var i = 0; i < board.length; i++) {
+      board[i] = leftSlide(board[i]);
+    }
+    return board;
+  }
+
+  List<List<int>> rightMoveBoard(List<List<int>> board) {
+    for (var i = 0; i < board.length; i++) {
+      board[i] = rightSlide(board[i]);
+    }
+    return board;
+  }
 
   slideUp(board) {
     return transpose(transpose(transpose(leftMoveBoard(transpose(board)))));
@@ -137,7 +138,7 @@ class Game2048{
         }
       }
     }
-    print("emptyspaces: ${emptySpaces.length}");
+//    print("emptyspaces: ${emptySpaces.length}");
     //if there are no empty spcaes then return the board as it is
     if (emptySpaces.length == 0) return null;
 
@@ -196,6 +197,42 @@ class Game2048{
     board = addTwo2(board);
     print("lets play 2048 game");
     play2048(board);
+  }
+  up(){
+    slideUp(board);
+    if(!gameWon(board)){
+      addTwo2(board);
+    }
+  }
+  down(){
+    slideDown(board);
+    if(!gameWon(board)){
+      addTwo2(board);
+    }
+  }
+  left(){
+    leftMoveBoard(board);
+    if(!gameWon(board)){
+      addTwo2(board);
+    }
+  }
+  right(){
+    rightMoveBoard(board);
+    if(!gameWon(board)){
+      addTwo2(board);
+    }
+  }
+  reset(){
+    board=[
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    addTwo2(board);
+  }
+  start(){
+    addTwo2(board);
   }
 }
 //void main(){
