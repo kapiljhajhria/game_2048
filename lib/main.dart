@@ -32,9 +32,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Game2048 game = Game2048();
 
   Widget singleCell(int num) {
-    return Container(
-        height: 80,
-        width: 80,
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 1000),
+
+      margin: EdgeInsets.all(5),
+//        height: 80,
+//        width: 80,
         decoration: new BoxDecoration(
           backgroundBlendMode: BlendMode.color,
           color: Colors.white,
@@ -42,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
               color: ColorTween(
                 begin: Color(0xFFFBC02D),
                 end: Color(0xff57BB8A), //FFD666
-              ).transform((num / 10).toDouble()),
+              ).transform((num / 68).toDouble()),
               width: 5.0,
               style: BorderStyle.solid),
         ),
@@ -59,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < board.length; i++) {
       List<Widget> tempRow = [];
       for (int j = 0; j < board[i].length; j++) {
-        tempRow.add(singleCell(board[i][j]));
+        tempRow.add(Expanded(child: singleCell(board[i][j])));
       }
       temp.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -78,7 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> displayDialog({String message}) async {
     switch (await showDialog(
-        barrierDismissible: true,
+        barrierDismissible: false,
+
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -87,7 +91,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             actions: <Widget>[
               FlatButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  game.start();
+                  setState(() {
+
+                  });
+                  Navigator.pop(context);
+                },
                 child: Text('OK'),
               )
             ],
@@ -136,13 +146,40 @@ class _MyHomePageState extends State<MyHomePage> {
                 showPopUp();
                 setState(() {});
               },
-              child: Container(
-                color: Colors.white30,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: cellsGrid(game.board),
-                ),
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    color: Colors.white30,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: cellsGrid(game.board),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      margin:EdgeInsets.all(10),
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+
+                        backgroundBlendMode: BlendMode.color,
+                        color: Colors.white,
+                        border: Border.all(
+                            color: ColorTween(
+                              begin: Color(0xFF11C01E),
+                              end: Color(0xffC00008), //FFD666
+                            ).transform((game.moves/520).toDouble()),
+                            width: 5.0,
+                            style: BorderStyle.solid),
+                      ),
+                        alignment: Alignment.center,
+                      child: Text("${game.moves}",style: TextStyle(fontSize: 20),),
+                    ),
+                  )
+                ],
               ),
             ),
           ),

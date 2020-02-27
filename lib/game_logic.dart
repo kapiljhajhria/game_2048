@@ -20,6 +20,7 @@ class Game2048 {
     [0, 0, 0, 0],
   ];
   Status gameStatus;
+  int moves=0;
 
   List<int> leftSlide(List<int> numList) {
     int origSize = numList.length;
@@ -102,7 +103,7 @@ class Game2048 {
 // console.log(slideUp(board));
 
   slideDown(board) {
-    return transpose(transpose(transpose(rightMoveBoard(transpose(board)))));
+    return transpose(rightMoveBoard(transpose(board)));
   }
 // console.log(slideDown(board));
 
@@ -218,6 +219,7 @@ class Game2048 {
 
   up() {
     slideUp(board);
+    moves++;
     updateGameStatus();
     if (gameStatus==Status.running) {
       addTwo2(board);
@@ -226,6 +228,7 @@ class Game2048 {
 
   down() {
     slideDown(board);
+    moves++;
     updateGameStatus();
     if (gameStatus==Status.running) {
       addTwo2(board);
@@ -234,6 +237,7 @@ class Game2048 {
 
   left() {
     leftMoveBoard(board);
+    moves++;
     updateGameStatus();
     if (gameStatus==Status.running) {
       addTwo2(board);
@@ -242,6 +246,7 @@ class Game2048 {
 
   right() {
     rightMoveBoard(board);
+    moves++;
     updateGameStatus();
     if (gameStatus == Status.running) {
       addTwo2(board);
@@ -255,6 +260,7 @@ class Game2048 {
       [0, 0, 0, 0],
       [0, 0, 0, 0],
     ];
+    moves=0;
     addTwo2(board);
     gameStatus = Status.running;
   }
