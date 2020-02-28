@@ -33,8 +33,6 @@ class Game2048 {
         size--; //decrease size by 1, since we have replaced two items with 1
       }
     }
-    //now to fill remaining array with zero
-    // numList.fill(0, size, origSize+1)
     int fillRemainingArray = origSize - numList.length;
     for (var j = 0; j < fillRemainingArray; j++) {
       numList.add(0);
@@ -55,7 +53,7 @@ class Game2048 {
     return tempA;
   }
 
-  rightSlide(List<int> numList) {
+  List<int> rightSlide(List<int> numList) {
     return leftSlide(numList.reversed.toList()).reversed.toList();
   }
 
@@ -122,22 +120,22 @@ class Game2048 {
     return false;
   }
 
-  updateGameStatus() {
+  void updateGameStatus() {
     for (var row = 0; row < board.length; row++) {
       for (var col = 0; col < board[row].length; col++) {
         if (board[row][col] == 2048) {
           gameStatus = Status.won;
-          return 0;
+          return;
         } else if (board[row][col] == 0) {
           gameStatus = Status.running;
-          return 0;
+          return;
         } else if (col < board[row].length - 1 &&
             (board[row][col] == board[row][col + 1])) {
           gameStatus = Status.running;
-          return 0;
+          return;
         }else if(row < board.length-1 && board[row][col]==board[row+1][col]){
           gameStatus=Status.running;
-          return 0;
+          return;
         }
       }
     }
@@ -169,14 +167,14 @@ class Game2048 {
     return board;
   }
 
-  playMove(board, move) {
+  List<List<int>> playMove(board, move) {
     if (move == 'l' || move == 'L') return slideLeft(board);
     if (move == 'r' || move == 'R') return slideRight(board);
     if (move == 'u' || move == 'U') return slideUp(board);
     if (move == 'd' || move == 'D') return slideDown(board);
   }
 
-  printBoard(board) {
+  void printBoard(board) {
     for (var row = 0; row < board.length; row++) {
       print("${board[row]}" + "\n");
     }
@@ -208,7 +206,7 @@ class Game2048 {
     return play2048(board);
   }
 
-  slide(Function function) {
+  void slide(Function function) {
    function();
     moves++;
     updateGameStatus();
@@ -217,7 +215,7 @@ class Game2048 {
     }
   }
 
-  start() {
+  void start() {
     board = [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
