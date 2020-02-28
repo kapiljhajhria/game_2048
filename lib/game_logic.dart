@@ -76,27 +76,29 @@ class Game2048 {
   }
 
 
-  List<List<int>> slideLeft(List<List<int>> board) {
+  List<List<int>> slideLeft() {
     for (var i = 0; i < board.length; i++) {
       board[i] = leftSlide(board[i]);
     }
     return board;
   }
 
-  List<List<int>> slideRight(List<List<int>> board) {
+  List<List<int>> slideRight() {
     for (var i = 0; i < board.length; i++) {
       board[i] = rightSlide(board[i]);
     }
     return board;
   }
 
-  List<List<int>> slideUp(board) {
-    return (transpose(slideLeft(transpose(board))));
+  List<List<int>> slideUp() {
+    transpose(board);
+    return (transpose(slideLeft()));
   }
 // console.log(slideUp(board));
 
-  List<List<int>> slideDown(board) {
-    return transpose(slideRight(transpose(board)));
+  List<List<int>> slideDown() {
+    transpose(board);
+    return transpose(slideRight());
   }
 // console.log(slideDown(board));
 
@@ -144,7 +146,7 @@ class Game2048 {
     print("gameStatus:$gameStatus");
   }
 
-  List<List<int>> addTwo2(board) {
+  List<List<int>> addTwo2() {
     //get list of all location with empty spaces
     var emptySpaces = [];
     for (var row = 0; row < board.length; row++) {
@@ -168,20 +170,20 @@ class Game2048 {
   }
 
   List<List<int>> playMove(board, move) {
-    if (move == 'l' || move == 'L') return slideLeft(board);
-    if (move == 'r' || move == 'R') return slideRight(board);
-    if (move == 'u' || move == 'U') return slideUp(board);
-    if (move == 'd' || move == 'D') return slideDown(board);
+    if (move == 'l' || move == 'L') return slideLeft();
+    if (move == 'r' || move == 'R') return slideRight();
+    if (move == 'u' || move == 'U') return slideUp();
+    if (move == 'd' || move == 'D') return slideDown();
   }
 
-  void printBoard(board) {
+  void printBoard() {
     for (var row = 0; row < board.length; row++) {
       print("${board[row]}" + "\n");
     }
   }
 
 //only for console
-  List<List<int>> play2048(board) {
+  List<List<int>> play2048() {
 
     var tempBoard = board;
     var playerMove;
@@ -195,7 +197,7 @@ class Game2048 {
       return tempBoard;
     }
     //now add 2 at any random place
-    board = addTwo2(tempBoard);
+    addTwo2();
     if (board == null) {
       print("game over, no more empty spaces");
       print(
@@ -203,7 +205,7 @@ class Game2048 {
       return tempBoard;
     }
 
-    return play2048(board);
+    return play2048();
   }
 
   void slide(Function function) {
@@ -211,7 +213,7 @@ class Game2048 {
     moves++;
     updateGameStatus();
     if (gameStatus == Status.running) {
-      addTwo2(board);
+      addTwo2();
     }
   }
 
@@ -223,7 +225,7 @@ class Game2048 {
       [0, 0, 0, 0],
     ];
     moves=0;
-    addTwo2(board);
+    addTwo2();
     gameStatus = Status.running;
   }
 }

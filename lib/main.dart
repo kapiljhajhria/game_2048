@@ -31,6 +31,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Game2048 game = Game2048();
 
+
+
   Widget singleCell(int num) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 1000),
@@ -74,7 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     game.start();
     setState(() {});
   }
@@ -125,11 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
               onHorizontalDragEnd: (drag) {
                 if (drag.primaryVelocity > 0) {
                   print("swipe right");
-                  game.slide((){game.slideRight(game.board);});
+                  game.slide(game.slideRight);
                 }
                 if (drag.primaryVelocity < 0) {
                   print("swipe left");
-                  game.slide((){game.slideLeft(game.board);});
+                  game.slide(game.slideLeft);
                 }
                 showPopUp();
                 setState(() {});
@@ -137,49 +138,22 @@ class _MyHomePageState extends State<MyHomePage> {
               onVerticalDragEnd: (drag) {
                 if (drag.primaryVelocity > 0) {
                   print("swipe Down");
-                  game.slide((){game.slideDown(game.board);});
+                  game.slide(game.slideDown);
                 }
                 if (drag.primaryVelocity < 0) {
                   print("swipe up");
-                  game.slide((){game.slideUp(game.board);});
+                  game.slide(game.slideUp);
                 }
                 showPopUp();
                 setState(() {});
               },
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    color: Colors.white30,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: cellsGrid(game.board),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.topRight,
-                    child: Container(
-                      margin:EdgeInsets.all(10),
-                      height: 60,
-                      width: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-
-                        backgroundBlendMode: BlendMode.color,
-                        color: Colors.white,
-                        border: Border.all(
-                            color: ColorTween(
-                              begin: Color(0xFF11C01E),
-                              end: Color(0xffC00008), //FFD666
-                            ).transform((game.moves/520).toDouble()),
-                            width: 5.0,
-                            style: BorderStyle.solid),
-                      ),
-                        alignment: Alignment.center,
-                      child: Text("${game.moves}",style: TextStyle(fontSize: 20),),
-                    ),
-                  )
-                ],
+              child: Container(
+                color: Colors.white30,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: cellsGrid(game.board),
+                ),
               ),
             ),
           ),
@@ -188,6 +162,26 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
+                Container(
+                  margin:EdgeInsets.all(10),
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+
+                    backgroundBlendMode: BlendMode.color,
+                    color: Colors.white,
+                    border: Border.all(
+                        color: ColorTween(
+                          begin: Color(0xFF11C01E),
+                          end: Color(0xffC00008), //FFD666
+                        ).transform((game.moves/520).toDouble()),
+                        width: 5.0,
+                        style: BorderStyle.solid),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text("${game.moves}",style: TextStyle(fontSize: 20),),
+                ),
                 IconButton(
                   icon: Icon(
                     Icons.refresh,
