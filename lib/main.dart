@@ -125,11 +125,11 @@ class _MyHomePageState extends State<MyHomePage> {
               onHorizontalDragEnd: (drag) {
                 if (drag.primaryVelocity > 0) {
                   print("swipe right");
-                  game.right();
+                  game.slide((){game.slideRight(game.board);});
                 }
                 if (drag.primaryVelocity < 0) {
                   print("swipe left");
-                  game.left();
+                  game.slide((){game.slideLeft(game.board);});
                 }
                 showPopUp();
                 setState(() {});
@@ -137,11 +137,11 @@ class _MyHomePageState extends State<MyHomePage> {
               onVerticalDragEnd: (drag) {
                 if (drag.primaryVelocity > 0) {
                   print("swipe Down");
-                  game.down();
+                  game.slide((){game.slideDown(game.board);});
                 }
                 if (drag.primaryVelocity < 0) {
                   print("swipe up");
-                  game.up();
+                  game.slide((){game.slideUp(game.board);});
                 }
                 showPopUp();
                 setState(() {});

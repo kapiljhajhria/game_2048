@@ -29,10 +29,6 @@ class Game2048 {
     for (int i = 0; i < size - 1; i++) {
       if (numList[i] == numList[i + 1]) {
         numList = removeElements(numList, i, i + 1);
-//      var temp = numList[i] + numList[i + 1]; //combine both integers
-//      numList.splice(i, 2); //remove old elements
-//      // numList.splice(i,1);
-//      numList.splice(i, 0, temp); //add the sum at index i
         numList.add(0); //add zero in the end
         size--; //decrease size by 1, since we have replaced two items with 1
       }
@@ -47,7 +43,7 @@ class Game2048 {
     return numList;
   }
 
-  removeElements(List<int> nums, int i, int j) {
+  List<int> removeElements(List<int> nums, int i, int j) {
     int temp = nums[i] + nums[j];
     List<int> tempA = [];
     tempA.addAll(nums.sublist(0, i));
@@ -63,7 +59,7 @@ class Game2048 {
     return leftSlide(numList.reversed.toList()).reversed.toList();
   }
 
-  transpose(List<List> matrix) {
+  List<List<int>> transpose(List<List<int>> matrix) {
     int n = matrix.length;
     for (int i = 0; i < n; i++) {
       for (int j = i + 1; j < n; j++) // only the upper is iterated
@@ -81,38 +77,37 @@ class Game2048 {
     return matrix;
   }
 
-// console.log(transpose(board));
-  List<List<int>> leftMoveBoard(List<List<int>> board) {
-    // console.log(board);
+
+  List<List<int>> slideLeft(List<List<int>> board) {
     for (var i = 0; i < board.length; i++) {
       board[i] = leftSlide(board[i]);
     }
     return board;
   }
 
-  List<List<int>> rightMoveBoard(List<List<int>> board) {
+  List<List<int>> slideRight(List<List<int>> board) {
     for (var i = 0; i < board.length; i++) {
       board[i] = rightSlide(board[i]);
     }
     return board;
   }
 
-  slideUp(board) {
-    return transpose(transpose(transpose(leftMoveBoard(transpose(board)))));
+  List<List<int>> slideUp(board) {
+    return (transpose(slideLeft(transpose(board))));
   }
 // console.log(slideUp(board));
 
-  slideDown(board) {
-    return transpose(rightMoveBoard(transpose(board)));
+  List<List<int>> slideDown(board) {
+    return transpose(slideRight(transpose(board)));
   }
 // console.log(slideDown(board));
 
-  getNextMove() {
-    var move;
+   String getNextMove() {
+    String move;
     move = stdin.readLineSync();
     return move;
   }
-// getNextMove();
+
 
   bool gameWon(board) {
     for (var row = 0; row < board.length; row++) {
@@ -151,7 +146,7 @@ class Game2048 {
     print("gameStatus:$gameStatus");
   }
 
-  addTwo2(board) {
+  List<List<int>> addTwo2(board) {
     //get list of all location with empty spaces
     var emptySpaces = [];
     for (var row = 0; row < board.length; row++) {
@@ -164,8 +159,6 @@ class Game2048 {
         }
       }
     }
-//    print("emptyspaces: ${emptySpaces.length}");
-    //if there are no empty spcaes then return the board as it is
     if (emptySpaces.length == 0) {
       return null;
     }
@@ -177,8 +170,8 @@ class Game2048 {
   }
 
   playMove(board, move) {
-    if (move == 'l' || move == 'L') return leftMoveBoard(board);
-    if (move == 'r' || move == 'R') return rightMoveBoard(board);
+    if (move == 'l' || move == 'L') return slideLeft(board);
+    if (move == 'r' || move == 'R') return slideRight(board);
     if (move == 'u' || move == 'U') return slideUp(board);
     if (move == 'd' || move == 'D') return slideDown(board);
   }
@@ -190,8 +183,8 @@ class Game2048 {
   }
 
 //only for console
-  play2048(board) {
-    printBoard(board);
+  List<List<int>> play2048(board) {
+
     var tempBoard = board;
     var playerMove;
     playerMove = getNextMove();
@@ -215,37 +208,8 @@ class Game2048 {
     return play2048(board);
   }
 
-//play2048(board);
-
-  up() {
-    slideUp(board);
-    moves++;
-    updateGameStatus();
-    if (gameStatus==Status.running) {
-      addTwo2(board);
-    }
-  }
-
-  down() {
-    slideDown(board);
-    moves++;
-    updateGameStatus();
-    if (gameStatus==Status.running) {
-      addTwo2(board);
-    }
-  }
-
-  left() {
-    leftMoveBoard(board);
-    moves++;
-    updateGameStatus();
-    if (gameStatus==Status.running) {
-      addTwo2(board);
-    }
-  }
-
-  right() {
-    rightMoveBoard(board);
+  slide(Function function) {
+   function();
     moves++;
     updateGameStatus();
     if (gameStatus == Status.running) {
