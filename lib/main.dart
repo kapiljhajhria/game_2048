@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:game_2048/game_logic.dart';
@@ -28,16 +30,19 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   Game2048 game = Game2048();
-
-
+  Animation<Offset> _offsetAnimation;
+  Animation<Offset> _offsetAnimationP;
+  AnimationController _controller;
+  Animation fadeAnimation;
+  Animation fadeAnimationP;
 
   Widget singleCell(int num) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 1000),
-
-      margin: EdgeInsets.all(5),
+    return Container(
+        margin: EdgeInsets.all(5),
+        padding: EdgeInsets.all(2.0),
 //        height: 80,
 //        width: 80,
         decoration: new BoxDecoration(
@@ -52,11 +57,36 @@ class _MyHomePageState extends State<MyHomePage> {
               style: BorderStyle.solid),
         ),
         child: Center(
-            child: Text(
-          num.toString(),
-          style: TextStyle(
-              fontSize: 35, color: Colors.black, fontWeight: FontWeight.bold),
-        )));
+            child: Stack(
+              children: <Widget>[
+                SlideTransition(
+                  position: _offsetAnimationP,
+                  child: FadeTransition(
+                    opacity: fadeAnimationP,
+                    child: Text(
+                      num.toString(),
+                      style: TextStyle(
+                          fontSize: 35,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                SlideTransition(
+                      position: _offsetAnimation,
+                      child: FadeTransition(
+                        opacity: fadeAnimation,
+                        child: Text(
+                          num.toString(),
+                          style: TextStyle(
+                              fontSize: 35,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                ),
+              ],
+            )));
   }
 
   List<Widget> cellsGrid(List<List<int>> board) {
@@ -76,6 +106,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    fadeAnimation = Tween(begin: 1.0, end: 0.0).animate(_controller);
+    fadeAnimationP = Tween(end: 1.0, begin: 0.0).animate(_controller);
+    _offsetAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(2.0, 0.0),
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ));
+    _offsetAnimationP = Tween<Offset>(
+      end: Offset.zero,
+      begin: const Offset(-2.0, 0.0),
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ));
     game.start();
     setState(() {});
   }
@@ -83,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> displayDialog({String message}) async {
     switch (await showDialog(
         barrierDismissible: false,
-
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -95,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   game.start();
                   setState(() {
-
+                    _controller.forward();
                   });
                   Navigator.pop(context);
                 },
@@ -115,6 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightBlue,
       appBar: AppBar(
         title: Text("2048"),
       ),
@@ -123,24 +173,67 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             flex: 5,
             child: GestureDetector(
-              onHorizontalDragEnd: (drag) {
+              onHorizontalDragEnd: (drag) async {
                 if (drag.primaryVelocity > 0) {
+                  _offsetAnimation = Tween<Offset>(
+                    begin: Offset.zero,
+                    end: const Offset(2.0, 0.0),
+                  ).animate(CurvedAnimation(
+                    parent: _controller,
+                    curve: Curves.linear,
+                  ));
+                  setState(() {});
+                  await _controller.forward(from: 0.0);
+                  _controller.reset();
                   print("swipe right");
                   game.slide(game.slideRight);
+                  setState(() {});
                 }
                 if (drag.primaryVelocity < 0) {
+                  _offsetAnimation = Tween<Offset>(
+                    begin: Offset.zero,
+                    end: const Offset(-2.0, 0.0),
+                  ).animate(CurvedAnimation(
+                    parent: _controller,
+                    curve: Curves.linear,
+                  ));
+                  setState(() {});
+                  await _controller.forward(from: 0.0);
+                  _controller.reset();
                   print("swipe left");
                   game.slide(game.slideLeft);
                 }
                 showPopUp();
                 setState(() {});
               },
-              onVerticalDragEnd: (drag) {
+              onVerticalDragEnd: (drag) async {
                 if (drag.primaryVelocity > 0) {
+                  _offsetAnimation = Tween<Offset>(
+                    begin: Offset.zero,
+                    end: const Offset(0.0, 1.0),
+                  ).animate(CurvedAnimation(
+                    parent: _controller,
+                    curve: Curves.linear,
+                  ));
+                  setState(() {});
+                  await _controller.forward(from: 0.0).then((f) {
+                    _controller.reset();
+                  });
                   print("swipe Down");
                   game.slide(game.slideDown);
                 }
                 if (drag.primaryVelocity < 0) {
+                  _offsetAnimation = Tween<Offset>(
+                    begin: Offset.zero,
+                    end: Offset(0.0, -1.0),
+                  ).animate(CurvedAnimation(
+                    parent: _controller,
+                    curve: Curves.linear,
+                  ));
+                  setState(() {});
+                  await _controller.forward(from: 0.0).then((f) {
+                    _controller.reset();
+                  });
                   print("swipe up");
                   game.slide(game.slideUp);
                 }
@@ -163,24 +256,26 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Container(
-                  margin:EdgeInsets.all(10),
+                  margin: EdgeInsets.all(10),
                   height: 60,
                   width: 60,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-
                     backgroundBlendMode: BlendMode.color,
                     color: Colors.white,
                     border: Border.all(
                         color: ColorTween(
                           begin: Color(0xFF11C01E),
                           end: Color(0xffC00008), //FFD666
-                        ).transform((game.moves/520).toDouble()),
+                        ).transform((game.moves / 520).toDouble()),
                         width: 5.0,
                         style: BorderStyle.solid),
                   ),
                   alignment: Alignment.center,
-                  child: Text("${game.moves}",style: TextStyle(fontSize: 20),),
+                  child: Text(
+                    "${game.moves}",
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ),
                 IconButton(
                   icon: Icon(
