@@ -133,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage>
                   setState(() {});
                   game.slide(game.slideLeft);
                   myController.forward(from: 0.0);
-//                  myController.reset();
                   print("swipe left");
 
                 }
@@ -148,7 +147,6 @@ class _MyHomePageState extends State<MyHomePage>
                   setState(() {});
                   game.slide(game.slideDown);
                   myController.forward(from: 0.0).then((f) {
-//                    myController.reset();
                   });
                   print("swipe Down");
 
@@ -168,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage>
                 setState(() {});
               },
               child: Container(
-                color: Colors.white30,
+                color: Colors.transparent,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -188,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage>
                   width: 60,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    backgroundBlendMode: BlendMode.color,
+
                     color: Colors.white,
                     border: Border.all(
                         color: ColorTween(
@@ -212,8 +210,6 @@ class _MyHomePageState extends State<MyHomePage>
                   onPressed: () async {
                     offsetStart = Offset(-3.0, 0.0);
                     offsetEnd = Offset(-3.0, 0.0);
-//                    offsetEnd=Offset(0.0,0.0);
-//                    offsetStart=Offset(0.0,0.0);
                     game.start();
                     setState(() {});
                     await myController.forward(from: 0.0).then((f) {
@@ -245,8 +241,6 @@ class SingleCell extends StatefulWidget {
 }
 
 class _SingleCellState extends State<SingleCell> {
-//  Animation fadeAnimation;
-//  Animation fadeAnimationP;
   String prevNum;
 
   @override
@@ -273,18 +267,18 @@ class _SingleCellState extends State<SingleCell> {
   @override
   Widget build(BuildContext context) {
     return Container(
-//          margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(2.0),
-//        height: 80,
-//        width: 80,
+          margin: EdgeInsets.all(5),
         decoration: new BoxDecoration(
-          backgroundBlendMode: BlendMode.color,
-          color: Colors.white,
+///TODO: write a function which takes in integer value and return Color
+          color: ColorTween(
+            begin: Color(0xFFFBC02D),
+            end: Color(0xff57BB8A), //FFD666
+          ).transform((int.parse(widget.cellValue) / 256).toDouble()),
           border: new Border.all(
               color: ColorTween(
                 begin: Color(0xFFFBC02D),
                 end: Color(0xff57BB8A), //FFD666
-              ).transform((int.parse(widget.cellValue) / 68).toDouble()),
+              ).transform((int.parse(widget.cellValue) / 12).toDouble()),
               width: 5.0,
               style: BorderStyle.solid),
         ),
