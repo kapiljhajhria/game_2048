@@ -67,12 +67,7 @@ class _MyHomePageState extends State<MyHomePage>
     );
 
     game.start();
-    setState(() {});
-    myController.addStatusListener((status){
-      setState(() {
 
-      });
-    });
   }
 
   Future<void> displayDialog({String message}) async {
@@ -121,25 +116,26 @@ class _MyHomePageState extends State<MyHomePage>
               onHorizontalDragEnd: (drag) async {
 
                 if (drag.primaryVelocity > 0) {
-                  offsetEnd = Offset(3.5, 0.0);
-                  offsetStart = Offset(-3.5, 0.0);
+                  offsetEnd = Offset(4.0, 0.0);
+                  offsetStart = Offset(-4.0, 0.0);
                   setState(() {});
                   game.slide(game.slideRight);
-                  await myController.forward(from: 0.0);
-                  myController.reset();
+                  myController.forward(from: 0.0);
+//                  myController.reset();
                   print("swipe right");
 
                   setState(() {});
                 }
                 if (drag.primaryVelocity < 0) {
-                  offsetEnd = Offset(-3.5, 0.0);
-                  offsetStart = Offset(3.5, 0.0);
+                  offsetEnd = Offset(-4.0, 0.0);
+                  offsetStart = Offset(4.0, 0.0);
 
                   setState(() {});
-                  await myController.forward(from: 0.0);
-                  myController.reset();
-                  print("swipe left");
                   game.slide(game.slideLeft);
+                  myController.forward(from: 0.0);
+//                  myController.reset();
+                  print("swipe left");
+
                 }
                 showPopUp();
                 setState(() {});
@@ -150,21 +146,23 @@ class _MyHomePageState extends State<MyHomePage>
                   offsetEnd = Offset(0.0, 1.2);
                   offsetStart = Offset(0.0, -1.2);
                   setState(() {});
-                  await myController.forward(from: 0.0).then((f) {
-                    myController.reset();
+                  game.slide(game.slideDown);
+                  myController.forward(from: 0.0).then((f) {
+//                    myController.reset();
                   });
                   print("swipe Down");
-                  game.slide(game.slideDown);
+
                 }
                 if (drag.primaryVelocity < 0) {
                   offsetEnd = Offset(0.0, -1.2);
                   offsetStart = Offset(0.0, 1.2);
                   setState(() {});
-                  await myController.forward(from: 0.0).then((f) {
-                    myController.reset();
+                  game.slide(game.slideUp);
+                   myController.forward(from: 0.0).then((f) {
+//                    myController.reset();
                   });
                   print("swipe up");
-                  game.slide(game.slideUp);
+
                 }
                 showPopUp();
                 setState(() {});
@@ -258,15 +256,11 @@ class _SingleCellState extends State<SingleCell> {
 
     });
     widget.controller.addStatusListener((status) {
-      if (widget.controller.isCompleted) {
+      if (status==AnimationStatus.completed) {
         prevNum = widget.cellValue;
-        setState(() {
 
-        });
       }
-      setState(() {
 
-      });
     });
     // TODO: implement initState
 //
