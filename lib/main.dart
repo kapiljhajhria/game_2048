@@ -33,68 +33,23 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   Game2048 game = Game2048();
-  Animation<Offset> _offsetAnimation;
-  Animation<Offset> _offsetAnimationP;
-  AnimationController _controller;
-  Animation fadeAnimation;
-  Animation fadeAnimationP;
-
-  Widget singleCell(int num) {
-    return Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(2.0),
-//        height: 80,
-//        width: 80,
-        decoration: new BoxDecoration(
-          backgroundBlendMode: BlendMode.color,
-          color: Colors.white,
-          border: new Border.all(
-              color: ColorTween(
-                begin: Color(0xFFFBC02D),
-                end: Color(0xff57BB8A), //FFD666
-              ).transform((num / 68).toDouble()),
-              width: 5.0,
-              style: BorderStyle.solid),
-        ),
-        child: Center(
-            child: Stack(
-              children: <Widget>[
-                SlideTransition(
-                  position: _offsetAnimationP,
-                  child: FadeTransition(
-                    opacity: fadeAnimationP,
-                    child: Text(
-                      num.toString(),
-                      style: TextStyle(
-                          fontSize: 35,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                SlideTransition(
-                      position: _offsetAnimation,
-                      child: FadeTransition(
-                        opacity: fadeAnimation,
-                        child: Text(
-                          num.toString(),
-                          style: TextStyle(
-                              fontSize: 35,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                ),
-              ],
-            )));
-  }
+  AnimationController myController;
+  List<Widget> cellsList = [];
+  Offset offsetStart = Offset(-3.0, 0.0);
+  Offset offsetEnd = Offset(-3.0, 0.0);
 
   List<Widget> cellsGrid(List<List<int>> board) {
     List<Widget> temp = [];
     for (int i = 0; i < board.length; i++) {
       List<Widget> tempRow = [];
       for (int j = 0; j < board[i].length; j++) {
-        tempRow.add(Expanded(child: singleCell(board[i][j])));
+        tempRow.add(Expanded(
+            child: SingleCell(
+          cellValue: board[i][j].toString(),
+          controller: myController,
+          offsetEnd: offsetEnd,
+          offsetStart: offsetStart,
+        )));
       }
       temp.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -106,28 +61,18 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void initState() {
-    _controller = AnimationController(
+    myController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    fadeAnimation = Tween(begin: 1.0, end: 0.0).animate(_controller);
-    fadeAnimationP = Tween(end: 1.0, begin: 0.0).animate(_controller);
-    _offsetAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(2.0, 0.0),
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    ));
-    _offsetAnimationP = Tween<Offset>(
-      end: Offset.zero,
-      begin: const Offset(-2.0, 0.0),
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    ));
+
     game.start();
     setState(() {});
+    myController.addStatusListener((status){
+      setState(() {
+
+      });
+    });
   }
 
   Future<void> displayDialog({String message}) async {
@@ -144,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage>
                 onPressed: () {
                   game.start();
                   setState(() {
-                    _controller.forward();
+                    myController.forward();
                   });
                   Navigator.pop(context);
                 },
@@ -174,32 +119,25 @@ class _MyHomePageState extends State<MyHomePage>
             flex: 5,
             child: GestureDetector(
               onHorizontalDragEnd: (drag) async {
+
                 if (drag.primaryVelocity > 0) {
-                  _offsetAnimation = Tween<Offset>(
-                    begin: Offset.zero,
-                    end: const Offset(2.0, 0.0),
-                  ).animate(CurvedAnimation(
-                    parent: _controller,
-                    curve: Curves.linear,
-                  ));
+                  offsetEnd = Offset(3.5, 0.0);
+                  offsetStart = Offset(-3.5, 0.0);
                   setState(() {});
-                  await _controller.forward(from: 0.0);
-                  _controller.reset();
-                  print("swipe right");
                   game.slide(game.slideRight);
+                  await myController.forward(from: 0.0);
+                  myController.reset();
+                  print("swipe right");
+
                   setState(() {});
                 }
                 if (drag.primaryVelocity < 0) {
-                  _offsetAnimation = Tween<Offset>(
-                    begin: Offset.zero,
-                    end: const Offset(-2.0, 0.0),
-                  ).animate(CurvedAnimation(
-                    parent: _controller,
-                    curve: Curves.linear,
-                  ));
+                  offsetEnd = Offset(-3.5, 0.0);
+                  offsetStart = Offset(3.5, 0.0);
+
                   setState(() {});
-                  await _controller.forward(from: 0.0);
-                  _controller.reset();
+                  await myController.forward(from: 0.0);
+                  myController.reset();
                   print("swipe left");
                   game.slide(game.slideLeft);
                 }
@@ -207,32 +145,23 @@ class _MyHomePageState extends State<MyHomePage>
                 setState(() {});
               },
               onVerticalDragEnd: (drag) async {
+
                 if (drag.primaryVelocity > 0) {
-                  _offsetAnimation = Tween<Offset>(
-                    begin: Offset.zero,
-                    end: const Offset(0.0, 1.0),
-                  ).animate(CurvedAnimation(
-                    parent: _controller,
-                    curve: Curves.linear,
-                  ));
+                  offsetEnd = Offset(0.0, 1.2);
+                  offsetStart = Offset(0.0, -1.2);
                   setState(() {});
-                  await _controller.forward(from: 0.0).then((f) {
-                    _controller.reset();
+                  await myController.forward(from: 0.0).then((f) {
+                    myController.reset();
                   });
                   print("swipe Down");
                   game.slide(game.slideDown);
                 }
                 if (drag.primaryVelocity < 0) {
-                  _offsetAnimation = Tween<Offset>(
-                    begin: Offset.zero,
-                    end: Offset(0.0, -1.0),
-                  ).animate(CurvedAnimation(
-                    parent: _controller,
-                    curve: Curves.linear,
-                  ));
+                  offsetEnd = Offset(0.0, -1.2);
+                  offsetStart = Offset(0.0, 1.2);
                   setState(() {});
-                  await _controller.forward(from: 0.0).then((f) {
-                    _controller.reset();
+                  await myController.forward(from: 0.0).then((f) {
+                    myController.reset();
                   });
                   print("swipe up");
                   game.slide(game.slideUp);
@@ -282,8 +211,18 @@ class _MyHomePageState extends State<MyHomePage>
                     Icons.refresh,
                     size: 50,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    offsetStart = Offset(-3.0, 0.0);
+                    offsetEnd = Offset(-3.0, 0.0);
+//                    offsetEnd=Offset(0.0,0.0);
+//                    offsetStart=Offset(0.0,0.0);
                     game.start();
+                    setState(() {});
+                    await myController.forward(from: 0.0).then((f) {
+                      myController.reset();
+                    });
+                    print("reset");
+
                     setState(() {});
                   },
                 )
@@ -293,5 +232,106 @@ class _MyHomePageState extends State<MyHomePage>
         ],
       ),
     );
+  }
+}
+
+class SingleCell extends StatefulWidget {
+  String cellValue;
+  Animation controller;
+  Offset offsetEnd;
+  Offset offsetStart;
+  SingleCell(
+      {this.cellValue, this.controller, this.offsetEnd, this.offsetStart});
+  @override
+  _SingleCellState createState() => _SingleCellState();
+}
+
+class _SingleCellState extends State<SingleCell> {
+//  Animation fadeAnimation;
+//  Animation fadeAnimationP;
+  String prevNum;
+
+  @override
+  void initState() {
+    prevNum = widget.cellValue;
+    setState(() {
+
+    });
+    widget.controller.addStatusListener((status) {
+      if (widget.controller.isCompleted) {
+        prevNum = widget.cellValue;
+        setState(() {
+
+        });
+      }
+      setState(() {
+
+      });
+    });
+    // TODO: implement initState
+//
+//    fadeAnimation = Tween(begin: 1.0, end: 0.0).animate(widget.controller);
+//    fadeAnimationP = Tween(end: 1.0, begin: 0.0).animate(widget.controller);
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+//          margin: EdgeInsets.all(5),
+        padding: EdgeInsets.all(2.0),
+//        height: 80,
+//        width: 80,
+        decoration: new BoxDecoration(
+          backgroundBlendMode: BlendMode.color,
+          color: Colors.white,
+          border: new Border.all(
+              color: ColorTween(
+                begin: Color(0xFFFBC02D),
+                end: Color(0xff57BB8A), //FFD666
+              ).transform((int.parse(widget.cellValue) / 68).toDouble()),
+              width: 5.0,
+              style: BorderStyle.solid),
+        ),
+        child: ClipRect(
+          child: Center(
+              child: Stack(
+            children: <Widget>[
+              SlideTransition(
+                position: Tween<Offset>(
+                  end: Offset.zero,
+                  begin: widget.offsetStart,
+                ).animate(CurvedAnimation(
+                  parent: widget.controller,
+                  curve: Curves.linear,
+                )),
+                child: Text(
+                  widget.cellValue,
+                  style: TextStyle(
+                      fontSize: 35,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              SlideTransition(
+                position: Tween<Offset>(
+                  end: widget.offsetEnd,
+                  begin: Offset(0.0, 0.0),
+                ).animate(CurvedAnimation(
+                  parent: widget.controller,
+                  curve: Curves.linear,
+                )),
+                child: Text(
+                  prevNum,
+                  style: TextStyle(
+                      fontSize: 35,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          )),
+        ));
   }
 }
