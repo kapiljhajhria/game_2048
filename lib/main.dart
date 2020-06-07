@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:game_2048/game_logic.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
 
@@ -37,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage>
   List<Widget> cellsList = [];
   Offset offsetStart = Offset(-3.0, 0.0);
   Offset offsetEnd = Offset(-3.0, 0.0);
+  SharedPreferences prefs;
 
   List<Widget> cellsGrid(List<List<int>> board) {
     List<Widget> temp = [];
@@ -61,13 +63,20 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void initState() {
+    getPrefsData();
     myController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
 
     game.start();
+  }
 
+  void getPrefsData() async {
+    await SharedPreferences.getInstance().then((sp) {
+      prefs = sp;
+      setState(() {});
+    });
   }
 
   Future<void> displayDialog({String message}) async {
@@ -114,7 +123,6 @@ class _MyHomePageState extends State<MyHomePage>
             flex: 5,
             child: GestureDetector(
               onHorizontalDragEnd: (drag) async {
-
                 if (drag.primaryVelocity > 0) {
                   offsetEnd = Offset(4.0, 0.0);
                   offsetStart = Offset(-4.0, 0.0);
@@ -134,33 +142,28 @@ class _MyHomePageState extends State<MyHomePage>
                   game.slide(game.slideLeft);
                   myController.forward(from: 0.0);
                   print("swipe left");
-
                 }
                 showPopUp();
                 setState(() {});
               },
               onVerticalDragEnd: (drag) async {
-
                 if (drag.primaryVelocity > 0) {
                   offsetEnd = Offset(0.0, 1.2);
                   offsetStart = Offset(0.0, -1.2);
                   setState(() {});
                   game.slide(game.slideDown);
-                  myController.forward(from: 0.0).then((f) {
-                  });
+                  myController.forward(from: 0.0).then((f) {});
                   print("swipe Down");
-
                 }
                 if (drag.primaryVelocity < 0) {
                   offsetEnd = Offset(0.0, -1.2);
                   offsetStart = Offset(0.0, 1.2);
                   setState(() {});
                   game.slide(game.slideUp);
-                   myController.forward(from: 0.0).then((f) {
+                  myController.forward(from: 0.0).then((f) {
 //                    myController.reset();
                   });
                   print("swipe up");
-
                 }
                 showPopUp();
                 setState(() {});
@@ -186,7 +189,6 @@ class _MyHomePageState extends State<MyHomePage>
                   width: 60,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-
                     color: Colors.white,
                     border: Border.all(
                         color: ColorTween(
@@ -246,15 +248,11 @@ class _SingleCellState extends State<SingleCell> {
   @override
   void initState() {
     prevNum = widget.cellValue;
-    setState(() {
-
-    });
+    setState(() {});
     widget.controller.addStatusListener((status) {
-      if (status==AnimationStatus.completed) {
+      if (status == AnimationStatus.completed) {
         prevNum = widget.cellValue;
-
       }
-
     });
     // TODO: implement initState
 //
@@ -267,9 +265,9 @@ class _SingleCellState extends State<SingleCell> {
   @override
   Widget build(BuildContext context) {
     return Container(
-          margin: EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
         decoration: new BoxDecoration(
-///TODO: write a function which takes in integer value and return Color
+          ///TODO: write a function which takes in integer value and return Color
           color: ColorTween(
             begin: Color(0xFFFBC02D),
             end: Color(0xff57BB8A), //FFD666
